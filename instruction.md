@@ -1,0 +1,1 @@
+## Thank you for installing ramen-adonis-firestore
