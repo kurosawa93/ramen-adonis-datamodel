@@ -1,5 +1,5 @@
 {
-  "name": "ramen-adonis-firestore",
+  "name": "ramen-adonis-datamodel",
   "version": "0.0.0",
   "description": "Part of ramen package. This package contains base model class for firestore data.",
   "scripts": {
