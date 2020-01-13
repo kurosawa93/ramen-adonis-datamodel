@@ -42,6 +42,23 @@ class FirestoreBaseModel {
         }
     }
 
+    async get() {
+        try {
+            const result = await this.firestoreDb.get()
+            if (!result.exists) {
+                return []
+            }
+            const data = []
+            result.forEach(doc => {
+                data.push(doc.data())
+            })
+            return {data: data, error: {}}
+        }
+        catch(err) {
+            return {error: {code: 500, message: err.message}}
+        }
+    }
+
     async add(data) {
         try {
             const result = await this.firestoreDb.add(data)
@@ -56,23 +73,6 @@ class FirestoreBaseModel {
         try {
             const result = await this.firestoreDb.set(data)
             return {data: result.data(), error: {}}
-        }
-        catch(err) {
-            return {error: {code: 500, message: err.message}}
-        }
-    }
-
-    async get() {
-        try {
-            const result = await this.firestoreDb.get()
-            if (!result.exists) {
-                return []
-            }
-            const data = []
-            result.forEach(doc => {
-                data.push(doc.data())
-            })
-            return {data: data, error: {}}
         }
         catch(err) {
             return {error: {code: 500, message: err.message}}
