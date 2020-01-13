@@ -14,10 +14,10 @@
   "author": "Rachmat Priambudi",
   "license": "GPL-3.0-or-later",
   "devDependencies": {
-    "@adonisjs/fold": "^4.0.9"
+    "@adonisjs/fold": "^4.0.9",
+    "@adonisjs/ace": "^5.0.8"
   },
   "dependencies": {
-    "@adonisjs/ace": "^5.0.8",
     "@google-cloud/firestore": "^3.3.4"
   }
 }
