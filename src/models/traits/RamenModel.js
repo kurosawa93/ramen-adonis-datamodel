@@ -44,7 +44,7 @@ class RamenModel {
         }
 
         if (error.code == 23505) {
-          throw new GenericResponseException('PAYLOAD ERROR. PRIMARY KEY ALREADY EXISTS', null, + 422)
+          throw new GenericResponseException('PAYLOAD ERROR. PRIMARY KEY ALREADY EXISTS', null, 422)
         }
 
         throw new GenericResponseException('POSTGRESQL ERROR. ' + error.message, null, 500)
