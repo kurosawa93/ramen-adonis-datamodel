@@ -6,7 +6,7 @@ class RamenModelProvider extends ServiceProvider {
     register() {
         this.app.singleton('Ramen/ModelTrait', () => {
             const RamenModelTrait = require('../src/models/traits/RamenModel')
-            return RamenModelTrait
+            return new RamenModelTrait()
         })
     }
 }

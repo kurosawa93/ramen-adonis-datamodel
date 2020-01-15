@@ -1,5 +1,3 @@
-# Thank you for installing ramen-adonis-firestore
-
 ## How to Use
 In order to use this package in your project, you will need to add the following lines in your `start/app.js` files inside the `providers` property.
 ```
