@@ -20,7 +20,7 @@ class RamenModel {
     Model.updateObject = async function (id, data) {
       let genericModel = await Model.find(id)
       if (!genericModel) {
-        throw new GenericResponseException('DATA FOR THIS ID IS NOT EXIST', null, 404)
+        throw new GenericResponseException('DATA IS NOT EXIST FOR RELATED ID', null, 404)
       }
       return await Model.saveObject(data, genericModel)
     }
@@ -92,9 +92,18 @@ class RamenModel {
     }
 
     Model.deleteData = async function (id) {
-      const modelObj = await Model.findOrFail(id)
-      await modelObj.delete()
-      return {data: modelObj, error: {}}
+      const modelObj = await Model.find(id)
+      if (!modelObj) {
+        throw new GenericResponseException('DATA IS NOT EXIST FOR RELATED ID', null, 404)
+      }
+
+      try {
+        await modelObj.delete()
+        return {data: modelObj, error: {}}
+      }
+      catch(err) {
+        throw new GenericResponseException('POSTGRESQL ERROR. ' + err.message, null, 500)
+      }
     }
 
     Model.commonQueryBuilder = async function (builder, queryParams){
@@ -102,13 +111,18 @@ class RamenModel {
         message: 'data successfully retrieved'
       }
 
-      var queryResult = await QueryResolver.commonQueryBuilder(builder, queryParams)
-      if (queryResult.pages) {
-        Object.keys(queryResult.pages).forEach(pageElement => {
-          defaultMeta[pageElement] = queryResult.pages[pageElement]
-        })
+      try {
+        const queryResult = await QueryResolver.commonQueryBuilder(builder, queryParams)
+        if (queryResult.pages) {
+          Object.keys(queryResult.pages).forEach(pageElement => {
+            defaultMeta[pageElement] = queryResult.pages[pageElement]
+          })
+        }
+        return {data: queryResult.rows, meta: defaultMeta, error: {}}
       }
-      return {data: queryResult.rows, meta: defaultMeta, error: {}}
+      catch(err) {
+        throw new GenericResponseException('POSTGRESQL ERROR. ' + err.message, null, 500)
+      }
     }
 
     Model.getBySlugWithLocale = async function (locale, slug) {
