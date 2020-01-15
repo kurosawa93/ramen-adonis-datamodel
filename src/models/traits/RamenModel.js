@@ -1,11 +1,8 @@
 'use strict'
 
-const { LogicalException } = require('@adonisjs/generic-exceptions')
 const QueryResolver = require('../../utils/RamenQueryResolver')
 const slugify = require('slugify')
-
-class DatabaseException extends LogicalException {}
-class ColumnNotDefinedException extends LogicalException {}
+const GenericResponseException = require('../../exceptions/GenericResponseException')
 
 class RamenModel {
   register (Model, customOptions = {}) {
@@ -21,13 +18,16 @@ class RamenModel {
     }
 
     Model.updateObject = async function (id, data) {
-      let genericModel = await Model.findOrFail(id)
+      let genericModel = await Model.find(id)
+      if (!genericModel) {
+        throw new GenericResponseException('DATA FOR THIS ID IS NOT EXIST', null, 404)
+      }
       return await Model.saveObject(data, genericModel)
     }
 
     Model.saveObject = async function (data, genericModel) {
       const columns = options.columns
-      if (columns.length == 0) throw new ColumnNotDefinedException('Model Error. please define columns in your model')
+      if (columns.length == 0) throw new GenericResponseException('MODEL ERROR. COLUMN IS NOT DEFINED IN RELATED MODEL', null, 500)
 
       columns.forEach(key => {
         if (data[key] != null) genericModel[key] = data[key]
@@ -40,9 +40,14 @@ class RamenModel {
       } catch (error){
         if (genericModel.id) {
           await genericModel.delete()
-          throw new DatabaseException('TRANSACTION ERROR OCCURED. ROLLBACK OPERATION ' + error.message)
+          throw new GenericResponseException('TRANSACTION ERROR OCCURED. ROLLBACK OPERATION ' + error.message, null, 500)
         }
-        throw new DatabaseException('POSTGRESQL ERROR. ' + error.message)
+
+        if (error.code == 23505) {
+          throw new GenericResponseException('PAYLOAD ERROR. PRIMARY KEY ALREADY EXISTS', null, + 422)
+        }
+
+        throw new GenericResponseException('POSTGRESQL ERROR. ' + error.message, null, 500)
       }
     }
 
