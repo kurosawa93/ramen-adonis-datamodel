@@ -36,6 +36,7 @@ class RamenModel {
       try {
           await genericModel.save()
           await Model.saveRelations(data, genericModel)
+          await genericModel.reload()
           return {data: genericModel, error: {}}
       } catch (error){
         if (genericModel.id) {
