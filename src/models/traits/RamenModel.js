@@ -30,7 +30,7 @@ class RamenModel {
       if (columns.length == 0) throw new GenericResponseException('MODEL ERROR. COLUMN IS NOT DEFINED IN RELATED MODEL', null, 500)
 
       columns.forEach(key => {
-        if (data[key] != null) genericModel[key] = data[key]
+        genericModel[key] = data[key]
       })
   
       try {
