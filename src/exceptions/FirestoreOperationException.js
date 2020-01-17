@@ -2,9 +2,9 @@
 
 const { LogicalException } = require('@adonisjs/generic-exceptions')
 
-class GenericResponseException extends LogicalException {
+class FirestoreOperationException extends LogicalException {
     handle(error, {response}) {
-        return response.status(error.code).send({
+        return response.status(500).send({
             data: null,
             meta: {
                 message: error.message
@@ -13,4 +13,4 @@ class GenericResponseException extends LogicalException {
     }
 }
 
-module.exports = GenericResponseException
+module.exports = FirestoreOperationException

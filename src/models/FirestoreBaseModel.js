@@ -1,6 +1,8 @@
 'use strict'
 
 const Firestore = require('@google-cloud/firestore')
+const FirestoreOperationException = require('../exceptions/FirestoreOperationException')
+const GenericResponseException = require('../exceptions/GenericResponseException')
 
 class FirestoreBaseModel {
     constructor(Config) {
@@ -33,49 +35,50 @@ class FirestoreBaseModel {
         try {
             const result = await this.firestoreDb.get()
             if (!result.exists) {
-                return {error: {code: 404, message: 'document does not exist'}}
+                throw new GenericResponseException('Data not found for this id.', null, 404)
             }
-            return {data: result.data(), error: {}}
+            return result.data()
         }
         catch(err) {
-            return {error: {code: 500, message: err.message}}
+            throw new FirestoreOperationException('Exception in Firestore Operation. ' + err.message)
         }
     }
 
     async get() {
         try {
+            const data = []
             const result = await this.firestoreDb.get()
             if (!result.exists) {
-                return []
+                return data
             }
-            const data = []
+
             result.forEach(doc => {
                 data.push(doc.data())
             })
-            return {data: data, error: {}}
+            return data
         }
         catch(err) {
-            return {error: {code: 500, message: err.message}}
+            throw new FirestoreOperationException('Exception in Firestore Operation. ' + err.message)
         }
     }
 
     async add(data) {
         try {
             const result = await this.firestoreDb.add(data)
-            return {data: {id: result.id}, error: {}}
+            return result.id
         }
         catch(err) {
-            return {error: {code: 500, message: err.message}}
+            throw new FirestoreOperationException('Exception in Firestore Operation. ' + err.message)
         }
     }
     
     async set(data) {
         try {
             const result = await this.firestoreDb.set(data)
-            return {data: result.data(), error: {}}
+            return result.id
         }
         catch(err) {
-            return {error: {code: 500, message: err.message}}
+            throw new FirestoreOperationException('Exception in Firestore Operation. ' + err.message)
         }
     }
 }
