@@ -76,7 +76,8 @@ class FirestoreBaseModel {
     async add(data) {
         try {
             const result = await this.firestoreDb.add(data)
-            return result.id
+            data.id = result.id
+            return data
         }
         catch(err) {
             throw new FirestoreOperationException('Exception in Firestore Operation. ' + err.message)
@@ -85,8 +86,8 @@ class FirestoreBaseModel {
     
     async set(data) {
         try {
-            const result = await this.firestoreDb.set(data)
-            return result.id
+            await this.firestoreDb.set(data)
+            return data
         }
         catch(err) {
             throw new FirestoreOperationException('Exception in Firestore Operation. ' + err.message)
