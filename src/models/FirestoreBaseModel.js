@@ -29,11 +29,24 @@ class FirestoreBaseModel {
         return this
     }
 
-    async find() {
+    async findOrFail() {
         try {
             const result = await this.firestoreDb.get()
             if (!result.exists) {
                 throw new GenericResponseException('Data not found for this id.', null, 404)
+            }
+            return result.data()
+        }
+        catch(err) {
+            throw new FirestoreOperationException('Exception in Firestore Operation. ' + err.message)
+        }
+    }
+
+    async find() {
+        try {
+            const result = await this.firestoreDb.get()
+            if (!result.exists) {
+                return null
             }
             return result.data()
         }
