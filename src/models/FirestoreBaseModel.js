@@ -13,9 +13,7 @@ class FirestoreBaseModel {
             keyFilename: firestoreKey
         })
 
-        this.firestoreDb = (() => {
-            return firestoreDb
-        })
+        this.firestoreDb = firestoreDb
     }
 
     setCollectionDb(collectionName, documentId = null) {
