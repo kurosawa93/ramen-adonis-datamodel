@@ -59,7 +59,7 @@ class FirestoreBaseModel {
         try {
             const data = []
             const result = await this.firestoreDb.get()
-            if (!result.exists) {
+            if (result.empty) {
                 return data
             }
 
