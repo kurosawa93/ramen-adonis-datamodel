@@ -64,7 +64,9 @@ class FirestoreBaseModel {
             }
 
             result.forEach(doc => {
-                data.push(doc.data())
+                const object = doc.data()
+                object.id = doc.id
+                data.push(object)
             })
             return data
         }
