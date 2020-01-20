@@ -93,6 +93,16 @@ class FirestoreBaseModel {
             throw new FirestoreOperationException('Exception in Firestore Operation. ' + err.message)
         }
     }
+
+    async delete() {
+        try {
+            await this.firestoreDb.delete()
+            return
+        }
+        catch(err) {
+            throw new FirestoreOperationException('Exception in Firestore Operation. ' + err.message)
+        }
+    }
 }
 
 module.exports = FirestoreBaseModel
