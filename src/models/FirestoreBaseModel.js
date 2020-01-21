@@ -24,6 +24,11 @@ class FirestoreBaseModel {
         return this
     }
 
+    setCollectionGroupDb(collectionGroupName) {
+        this.firestoreDb = this.firestoreDb.collectionGroup(collectionGroupName)
+        return this
+    }
+
     where(columnName, operator, value) {
         this.firestoreDb = this.firestoreDb.where(columnName, operator, value)
         return this
