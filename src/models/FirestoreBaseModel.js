@@ -34,6 +34,14 @@ class FirestoreBaseModel {
         return this
     }
 
+    orderBy(field, direction = null) {
+        if (!direction)
+            this.firestoreDb = this.firestoreDb.orderBy(field)
+        else
+            this.firestoreDb = this.firestoreDb.orderBy(field, direction)
+        return this
+    }
+
     async findOrFail() {
         try {
             const result = await this.firestoreDb.get()
