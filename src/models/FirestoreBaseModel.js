@@ -84,6 +84,7 @@ class FirestoreBaseModel {
         try {
             const result = await this.firestoreDb.add(data)
             data.id = result.id
+            await this.firestoreDb.doc(data.id).set(data)
             return data
         }
         catch(err) {
