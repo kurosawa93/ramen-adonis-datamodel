@@ -1,5 +1,7 @@
 'use strict'
 
+const Firestore = require('@google-cloud/firestore')
+
 class FirestoreResolver {
     constructor(Config) {
         const firestoreKey = Config._config.ramenfirestore.firestoreKey

@@ -1,9 +1,12 @@
 'use strict'
 
 const FirestoreOperationException = require('../exceptions/FirestoreOperationException')
+const FirestoreResolver = require('../resolver/FirestoreResolver')
+const Config = use('Config')
 
-class FirestoreModel {
+class FirestoreModel extends FirestoreResolver {
     constructor(columns) {
+        super(Config)
         this.columns = columns
     }
 
