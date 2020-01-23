@@ -17,7 +17,7 @@ class FirestoreModel extends FirestoreResolver {
     }
 
     static async getData(queryParams) {
-        let instance = FirestoreModel.initiate()
+        let instance = this.initiate()
         let value = null
         for (const key in queryParams) {
             value = queryParams[key]
@@ -35,12 +35,12 @@ class FirestoreModel extends FirestoreResolver {
     }
 
     static async getDataByDocumentId(documentId) {
-        const instance = FirestoreModel.initiate(documentId)
+        const instance = this.initiate(documentId)
         return await instance.findOrFail()
     }
 
     static async createData(data) {
-        const instance = FirestoreModel.initiate()
+        const instance = this.initiate()
         if (instance.columns.empty) 
             throw new FirestoreOperationException('columns is not defined in trait usage.')
 
@@ -57,7 +57,7 @@ class FirestoreModel extends FirestoreResolver {
     }
 
     static async updateData(documentId, data) {
-        const instance = FirestoreModel.initiate(documentId)
+        const instance = this.initiate(documentId)
         if (instance.columns.empty) 
             throw new FirestoreOperationException('columns is not defined in trait usage.')
 
@@ -72,7 +72,7 @@ class FirestoreModel extends FirestoreResolver {
     }
 
     static async deleteData(documentId) {
-        await FirestoreModel.initiate(documentId).delete()
+        await this.initiate(documentId).delete()
         return {id: documentId}
     }
 }
