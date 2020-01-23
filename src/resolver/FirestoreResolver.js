@@ -1,10 +1,6 @@
 'use strict'
 
-const Firestore = require('@google-cloud/firestore')
-const FirestoreOperationException = require('../exceptions/FirestoreOperationException')
-const GenericResponseException = require('../exceptions/GenericResponseException')
-
-class FirestoreBaseModel {
+class FirestoreResolver {
     constructor(Config) {
         const firestoreKey = Config._config.ramenfirestore.firestoreKey
         const projectId = Config._config.ramenfirestore.firestoreProjectId
@@ -24,6 +20,11 @@ class FirestoreBaseModel {
         return this
     }
 
+    setDocumentId(documentId) {
+        this.firestoreDb = this.firestoreDb.doc(documentId)
+        return this
+    }
+
     setCollectionGroupDb(collectionGroupName) {
         this.firestoreDb = this.firestoreDb.collectionGroup(collectionGroupName)
         return this
@@ -39,6 +40,11 @@ class FirestoreBaseModel {
             this.firestoreDb = this.firestoreDb.orderBy(field)
         else
             this.firestoreDb = this.firestoreDb.orderBy(field, direction)
+        return this
+    }
+
+    limit(limit) {
+        this.firestoreDb = this.firestoreDb.limit(limit)
         return this
     }
 
@@ -72,14 +78,10 @@ class FirestoreBaseModel {
         try {
             const data = []
             const result = await this.firestoreDb.get()
-            if (result.empty) {
-                return data
-            }
+            if (result.empty) return data
 
             result.forEach(doc => {
-                const object = doc.data()
-                object.id = doc.id
-                data.push(object)
+                data.push(doc.data())
             })
             return data
         }
@@ -121,4 +123,4 @@ class FirestoreBaseModel {
     }
 }
 
-module.exports = FirestoreBaseModel
+module.exports = FirestoreResolver

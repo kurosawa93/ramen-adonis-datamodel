@@ -5,8 +5,13 @@ class RamenFirestoreProvider extends ServiceProvider {
 
     register() {
         this.app.singleton('Ramen/FirestoreModel', (app) => {
-            const RamenFirestoreModel = require('../src/models/FirestoreBaseModel')
+            const RamenFirestoreModel = require('../src/resolver/FirestoreResolver')
             return RamenFirestoreModel
+        })
+
+        this.app.singleton('Ramen/FirestoreTrait', (app) => {
+            const RamenFirestoreTrait = require('../src/models/traits/FirestoreModel')
+            return new RamenFirestoreTrait()
         })
     }
 }
