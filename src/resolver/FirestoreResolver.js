@@ -1,6 +1,7 @@
 'use strict'
 
 const Firestore = require('@google-cloud/firestore')
+const FirestoreOperationException = require('../exceptions/FirestoreOperationException')
 
 class FirestoreResolver {
     constructor(Config) {
