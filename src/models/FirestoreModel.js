@@ -5,9 +5,15 @@ const FirestoreResolver = require('../resolver/FirestoreResolver')
 const Config = use('Config')
 
 class FirestoreModel extends FirestoreResolver {
-    constructor(columns) {
+    constructor(columns, collection) {
         super(Config)
         this.columns = columns
+        this.collection = collection
+    }
+
+    static initiate(documentId = null) {
+        const instance = new this()
+        return instance.setCollectionDb(instance.collection, documentId)
     }
 
     static buildCreatedAt() {
@@ -16,8 +22,15 @@ class FirestoreModel extends FirestoreResolver {
                 .replace(/\..+/, '')
     }
 
-    static async getData(queryParams) {
-        let instance = this.initiate()
+    static getInstance(documentId = null, customInstance = null) {
+        if (customInstance)
+            return customInstance
+        
+        return this.initiate(documentId)
+    }
+
+    static async getData(queryParams, customInstance) {
+        let instance = this.getInstance(null, customInstance)
         let value = null
         for (const key in queryParams) {
             value = queryParams[key]
@@ -34,13 +47,13 @@ class FirestoreModel extends FirestoreResolver {
         return result
     }
 
-    static async getDataByDocumentId(documentId) {
-        const instance = this.initiate(documentId)
+    static async getDataByDocumentId(documentId, customInstance = null) {
+        const instance = this.getInstance(documentId, customInstance)
         return await instance.findOrFail()
     }
 
-    static async createData(data) {
-        const instance = this.initiate()
+    static async createData(data, customInstance = null) {
+        const instance = this.getInstance(customInstance)
         if (instance.columns.empty) 
             throw new FirestoreOperationException('columns is not defined in trait usage.')
 
@@ -56,8 +69,8 @@ class FirestoreModel extends FirestoreResolver {
         return object
     }
 
-    static async updateData(documentId, data) {
-        const instance = this.initiate(documentId)
+    static async updateData(documentId, data, customInstance = null) {
+        let instance = this.getInstance(documentId, customInstance)
         if (instance.columns.empty) 
             throw new FirestoreOperationException('columns is not defined in trait usage.')
 
