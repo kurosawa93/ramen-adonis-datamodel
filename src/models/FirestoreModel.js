@@ -53,17 +53,17 @@ class FirestoreModel extends FirestoreResolver {
     }
 
     static async createData(data, customInstance = null) {
-        const instance = this.getInstance(customInstance)
+        const instance = this.getInstance(null, customInstance)
         if (instance.columns.empty) 
             throw new FirestoreOperationException('columns is not defined in trait usage.')
 
         const object = {}
-        const columns = options.columns
+        const columns = instance.columns
         for (const column of columns) {
             object[column] = data[column]
         }
 
-        object['created_at'] = instance.buildCreatedAt()
+        object['created_at'] = this.buildCreatedAt()
         await instance.add(object)
 
         return object
