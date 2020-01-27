@@ -29,7 +29,7 @@ class FirestoreModel extends FirestoreResolver {
         return this.initiate(documentId)
     }
 
-    static async getData(queryParams, customInstance) {
+    static async getData(queryParams, customInstance = null) {
         let instance = this.getInstance(null, customInstance)
         let value = null
         for (const key in queryParams) {
