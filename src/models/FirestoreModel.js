@@ -31,15 +31,17 @@ class FirestoreModel extends FirestoreResolver {
 
     static async getData(queryParams, customInstance = null) {
         let instance = this.getInstance(null, customInstance)
-        let value = null
-        for (const key in queryParams) {
-            value = queryParams[key]
-            if (value.includes(',')) {
-                const valueArray = value.split(',')
-                instance = instance.where(key, 'in', valueArray)
-            }
-            else {
-                instance = instance.where(key, '=', value)
+        if (queryParams) {
+            let value = null
+            for (const key in queryParams) {
+                value = queryParams[key]
+                if (value.includes(',')) {
+                    const valueArray = value.split(',')
+                    instance = instance.where(key, 'in', valueArray)
+                }
+                else {
+                    instance = instance.where(key, '=', value)
+                }
             }
         }
 
