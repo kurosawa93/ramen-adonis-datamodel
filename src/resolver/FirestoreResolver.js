@@ -2,6 +2,7 @@
 
 const Firestore = require('@google-cloud/firestore')
 const FirestoreOperationException = require('../exceptions/FirestoreOperationException')
+const GenericResponseException = require('../exceptions/GenericResponseException')
 
 class FirestoreResolver {
     constructor(Config) {
