@@ -4,29 +4,28 @@ class RamenQueryResolver {
   constructor() {}
 
   static commonQueryBuilder(builder, queryParams) {
-    var reservedKeyword = ['orderBy', 'direction', 'page', 'limit', 'relations', 'locale']
+    var reservedKeyword = ['orderBy', 'direction', 'page', 'limit', 'relations', 'locale', 'array']
 
     for (let key in queryParams){
-      if (!reservedKeyword.includes(key)){
+      if (!reservedKeyword.includes(key))
         this.resolveOperator(builder, key, queryParams[key])
-      }
     }
 
-    if (queryParams['locale']) {
+    if (queryParams['locale']) 
       this.resolveLocale(builder, queryParams['locale'])
-    }
 
-    if (queryParams['relations']){
+    if (queryParams['relations'])
       this.resolveRelations(builder, queryParams['relations'])
-    }
 
-    if (queryParams['orderBy']){
+    if (queryParams['orderBy'])
       this.resolveOrderBy(builder, queryParams['orderBy'], queryParams['direction'] ? queryParams['direction'] : 'desc')
-    }
 
-    if (queryParams['page']){
+    if (queryParams['array']) 
+      this.resolveArray(builder, queryParams['array'])
+
+    if (queryParams['page'])
       return builder.paginate(queryParams['page'], queryParams['limit'] ? queryParams['limit'] : 25)
-    }
+
     return builder.fetch()
   }
   
@@ -193,6 +192,24 @@ class RamenQueryResolver {
     query = query.substring(1, query.length-1)
     query += ' = ?'
     builder.whereRaw(query, value)
+    return builder
+  }
+
+  static resolveArray(builder, value) {
+    const parameters = value.split(';')
+    for (const parameter of parameters) {
+      const objects = parameter.split(':')
+      const column = objects[0]
+      const values = objects[1].split(',')
+      let valueString = ''
+      for (let i = 0; i < values.length; i++) {
+        const value = values[0]
+        valueString += value
+        if (i < values.length-1) 
+          valueString += ','
+      }
+      builder.whereRaw(column + "  && '{" + valueString + "}'")
+    }
     return builder
   }
 
