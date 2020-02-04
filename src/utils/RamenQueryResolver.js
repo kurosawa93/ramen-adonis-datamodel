@@ -6,10 +6,8 @@ class RamenQueryResolver {
   static commonQueryBuilder(builder, queryParams) {
     var reservedKeyword = ['orderBy', 'direction', 'page', 'limit', 'relations', 'locale', 'array']
 
-    for (let key in queryParams){
-      if (!reservedKeyword.includes(key))
-        this.resolveOperator(builder, key, queryParams[key])
-    }
+    if (queryParams['array']) 
+      this.resolveArray(builder, queryParams['array'])
 
     if (queryParams['locale']) 
       this.resolveLocale(builder, queryParams['locale'])
@@ -20,8 +18,10 @@ class RamenQueryResolver {
     if (queryParams['orderBy'])
       this.resolveOrderBy(builder, queryParams['orderBy'], queryParams['direction'] ? queryParams['direction'] : 'desc')
 
-    if (queryParams['array']) 
-      this.resolveArray(builder, queryParams['array'])
+    for (let key in queryParams){
+      if (!reservedKeyword.includes(key))
+        this.resolveOperator(builder, key, queryParams[key])
+    }
 
     if (queryParams['page'])
       return builder.paginate(queryParams['page'], queryParams['limit'] ? queryParams['limit'] : 25)
@@ -154,8 +154,8 @@ class RamenQueryResolver {
 
   static resolveOr(builder, columnName, value) {
     value = value.replace('|', '')
-    builder.orWhere((builder) => {
-      builder.orWhere(columnName, value)
+    builder.orWhere((orBuilder) => {
+      orBuilder.where(columnName, value)
     })
     return builder
   }
@@ -203,7 +203,7 @@ class RamenQueryResolver {
       const values = objects[1].split(',')
       let valueString = ''
       for (let i = 0; i < values.length; i++) {
-        const value = values[0]
+        const value = values[i]
         valueString += value
         if (i < values.length-1) 
           valueString += ','
