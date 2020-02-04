@@ -79,10 +79,6 @@ class RamenModel {
     }
 
     Model.upsert = async function (data) {
-      if (options.slug) {
-        Model.assignSlug(data, options.path, options.valuePath)
-      }
-      
       if (data.id != null) {
         const genericModel = await Model.updateObject(data.id, data)
         return {data: genericModel.data, error: {}}
@@ -132,6 +128,9 @@ class RamenModel {
       return {data: result, error: {}}
     }
 
+    /**
+     * DEPRECATED
+     */
     Model.assignSlug = function(obj, slugPath, slugValuePath) {
       const valuePath = slugValuePath.split('.')
       let value = data
