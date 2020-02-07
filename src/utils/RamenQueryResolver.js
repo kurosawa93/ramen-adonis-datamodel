@@ -1,11 +1,11 @@
 'use strict'
 
+const reservedKeyword = ['orderBy', 'direction', 'page', 'limit', 'relations', 'locale', 'array', 'json']
+
 class RamenQueryResolver {
   constructor() {}
 
   static commonQueryBuilder(builder, queryParams) {
-    var reservedKeyword = ['orderBy', 'direction', 'page', 'limit', 'relations', 'locale', 'array']
-
     if (queryParams['array']) 
       this.resolveArray(builder, queryParams['array'])
 
@@ -14,6 +14,9 @@ class RamenQueryResolver {
 
     if (queryParams['relations'])
       this.resolveRelations(builder, queryParams['relations'])
+
+    if (queryParams['json'])
+      this.resolveJson(builder, queryParams['json'])
 
     if (queryParams['orderBy'])
       this.resolveOrderBy(builder, queryParams['orderBy'], queryParams['direction'] ? queryParams['direction'] : 'desc')
@@ -142,9 +145,6 @@ class RamenQueryResolver {
     else if (compareWith.includes('%')) {
       this.resolveLike(builder, columnName, compareWith)
       customOperator = true
-    } else if (columnName.charAt(0) === '{' && columnName.charAt(columnName.length-1) === '}') {
-      this.resolveJson(builder, columnName, compareWith)
-      customOperator = true
     }
 
     if (!customOperator) {
@@ -188,10 +188,31 @@ class RamenQueryResolver {
     return builder
   }
 
-  static resolveJson(builder, query, value) {
-    query = query.substring(1, query.length-1)
-    query += ' = ?'
-    builder.whereRaw(query, value)
+  static resolveJson(builder, paramValue) {
+    const queryParam = paramValue.split(':')
+    const columns = queryParam[0].split('.')
+    const value = queryParam[1]
+    let queryStr = ''
+
+    for (let i = 0; i < columns.length; i++) {
+      let column = columns[i]
+      if (i > 0)
+        queryStr += "'" + column + "'"
+      else
+        queryStr += column
+
+      if (i === columns.length-2)
+        queryStr = queryStr + '->>'
+      else if (i != columns.length-1)
+        queryStr = queryStr + '->'
+    }
+
+    if (value.includes('%'))
+      queryStr += ' like ?'
+    else
+      queryStr += ' = ?'
+
+    builder.whereRaw(queryStr, value)
     return builder
   }
 
