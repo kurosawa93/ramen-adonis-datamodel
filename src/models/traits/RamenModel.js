@@ -71,7 +71,7 @@ class RamenModel {
             break
           case 'hasMany':
             await QueryResolver.saveHasManyRelations(genericModel, relation.name, relationData)
-            breakcreateObject
+            break
           default:
             await QueryResolver.saveHasOneRelations(genericModel, relation.name, relationData)
         }

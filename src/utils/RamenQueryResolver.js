@@ -33,7 +33,7 @@ class RamenQueryResolver {
   }
   
   static resolveRelations(builder, input) {
-    let relations = input.split(',')
+    let relations = input.split('@')
     relations.forEach(relationElement => {
       if (relationElement.includes('^')) {
         this.resolveQueryRelations(builder, relationElement)
@@ -52,21 +52,18 @@ class RamenQueryResolver {
     relationQuery = relationQuery.split(';')
 
     relationQuery.forEach(queryElement => {
-      let queryObject = queryElement.split(',')
-      queryObject.forEach(objectElement => {
-        objectElement = objectElement.split('=')
-        if (objectElement[0].includes('*')) {
-          builder.with(relationName, (innerBuilder) => {
-            objectElement[0] = objectElement[0].replace('*', '')
-            this.resolveOperator(innerBuilder, objectElement[0], objectElement[1])
-          })
-        }
-        else {
-          builder.whereHas(relationName, (builder) => {
-            this.resolveOperator(builder, objectElement[0], objectElement[1])
-          })
-        }
-      })
+      const objectElement = queryElement.split('=')
+      if (objectElement[0].includes('*')) {
+        builder.with(relationName, (innerBuilder) => {
+          objectElement[0] = objectElement[0].replace('*', '')
+          this.resolveOperator(innerBuilder, objectElement[0], objectElement[1])
+        })
+      }
+      else {
+        builder.whereHas(relationName, (builder) => {
+          this.resolveOperator(builder, objectElement[0], objectElement[1])
+        })
+      }
     })
     return builder
   }
@@ -145,6 +142,9 @@ class RamenQueryResolver {
     else if (compareWith.includes('%')) {
       this.resolveLike(builder, columnName, compareWith)
       customOperator = true
+    } else if (columnName.charAt(0) === '{' && columnName.charAt(columnName.length-1) === '}') {
+      this.resolveJsonRaw(builder, columnName, compareWith)
+      customOperator = true
     }
 
     if (!customOperator) {
@@ -155,7 +155,7 @@ class RamenQueryResolver {
   static resolveOr(builder, columnName, value) {
     value = value.replace('|', '')
     builder.orWhere((orBuilder) => {
-      orBuilder.where(columnName, value)
+      orBuilder.orWhere(columnName, value)
     })
     return builder
   }
@@ -214,6 +214,12 @@ class RamenQueryResolver {
 
     builder.whereRaw(queryStr, value)
     return builder
+  }
+
+  static resolveJsonRaw(builder, query, value) {
+    query = query.substring(1, query.length-1)
+    query += ' = ?'
+    builder.whereRaw(query, value)
   }
 
   static resolveArray(builder, value) {
