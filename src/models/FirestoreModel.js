@@ -33,10 +33,20 @@ class FirestoreModel extends FirestoreResolver {
         let instance = this.getInstance(null, customInstance)
         if (queryParams) {
             let value = null
-            for (const key in queryParams) {
+            for (let key in queryParams) {
                 value = queryParams[key]
-                if (value.includes(',')) {
-                    const valueArray = value.split(',')
+                if (key.includes('*')) {
+                    key = key.replace('*', '')
+
+                    if (value.includes(',')) {
+                        const valueArray = value.split(',')
+                        instance = instance.where(key, 'array-contains-any', valueArray)
+                    }
+                    else {
+                        instance = instance.where(key, 'array-contains', value)
+                    }
+                }
+                else if (value.includes(',')) {
                     instance = instance.where(key, 'in', valueArray)
                 }
                 else {
@@ -75,7 +85,7 @@ class FirestoreModel extends FirestoreResolver {
         return object
     }
 
-    static async updateData(documentId, data, customInstance = null) {
+    static async createDataByDocumentId(documentId, data, customInstance) {
         let instance = this.getInstance(documentId, customInstance)
         if (instance.columns.empty) 
             throw new FirestoreOperationException('columns is not defined in trait usage.')
@@ -91,6 +101,22 @@ class FirestoreModel extends FirestoreResolver {
         }
 
         await instance.set(object)
+        return object
+    }
+
+    static async updateData(documentId, data, customInstance = null) {
+        let instance = this.getInstance(documentId, customInstance)
+        if (instance.columns.empty) 
+            throw new FirestoreOperationException('columns is not defined in trait usage.')
+
+        const currentData = await this.getDataByDocumentId(documentId, instance)
+        const columns = instance.columns
+        for (const column of columns) {
+            if (data[column])
+                object[column] = data[column]
+        }
+
+        await instance.set(currentData)
         return object
     }
 
