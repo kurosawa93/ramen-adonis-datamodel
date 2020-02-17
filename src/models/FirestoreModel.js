@@ -35,7 +35,7 @@ class FirestoreModel extends FirestoreResolver {
             let value = null
             for (let key in queryParams) {
                 if (key === 'limit') {
-                    instance = instance.limit(queryParams[key])
+                    instance = instance.limit(Number(queryParams[key]))
                     continue
                 }
 
