@@ -34,6 +34,11 @@ class FirestoreModel extends FirestoreResolver {
         if (queryParams) {
             let value = null
             for (let key in queryParams) {
+                if (key === limit) {
+                    instance = instance.limit(queryParams[key])
+                    continue
+                }
+
                 value = queryParams[key]
                 if (key.includes('*')) {
                     key = key.replace('*', '')
