@@ -122,7 +122,7 @@ class FirestoreModel extends FirestoreResolver {
         }
 
         await instance.set(currentData)
-        return object
+        return currentData
     }
 
     static async deleteData(documentId) {
