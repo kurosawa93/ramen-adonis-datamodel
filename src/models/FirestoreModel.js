@@ -118,7 +118,7 @@ class FirestoreModel extends FirestoreResolver {
         const columns = instance.columns
         for (const column of columns) {
             if (data[column])
-                object[column] = data[column]
+                currentData[column] = data[column]
         }
 
         await instance.set(currentData)
